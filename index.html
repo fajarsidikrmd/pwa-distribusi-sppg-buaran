@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#0f172a" />
+  <title>PWA Distribusi & Dokumen MBG - SPPG Buaran</title>
+  <link rel="manifest" href="./manifest.json" />
+  <link rel="stylesheet" href="./style.css" />
+</head>
+<body>
+  <!-- ================= HEADER / NAVBAR (TIDAK IKUT TERCETAK) ================= -->
+  <header class="app-header no-print">
+    <div class="header-brand">
+      <div class="brand-badge">BGN</div>
+      <div>
+        <h1>SPPG BREBES JATIBARANG BUARAN</h1>
+        <p>Sistem Otomasi Surat Jalan, BAST, Checklist Organoleptik & Rekap Ompreng</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <span id="syncStatusBadge" class="badge badge-offline">Mode Lokal (Default)</span>
+      <button type="button" class="btn btn-outline" onclick="openApiModal()">⚙️ Koneksi GAS & Logo</button>
+      <a id="btnOpenSpreadsheet" href="#" target="_blank" class="btn btn-outline" style="display:none;">📊 Buka Spreadsheet</a>
+      <button type="button" class="btn btn-primary" onclick="syncFromGAS()">🔄 Muat dari GAS</button>
+    </div>
+  </header>
+
+  <!-- ================= NAVIGASI TAB UTAMA (TIDAK IKUT TERCETAK) ================= -->
+  <nav class="app-tabs no-print">
+    <button class="tab-btn active" data-tab="tab-dashboard" onclick="switchTab('tab-dashboard')">
+      📋 1. Panel Harian & Menu
+    </button>
+    <button class="tab-btn" data-tab="tab-kpm" onclick="switchTab('tab-kpm')">
+      🏫 2. Kuota Lapangan vs Dapodik
+    </button>
+    <button class="tab-btn" data-tab="tab-print" onclick="switchTab('tab-print')">
+      🖨️ 3. Pratinjau & Cetak 4 Dokumen
+    </button>
+  </nav>
+
+  <!-- ================= KONTEN APLIKASI (TIDAK IKUT TERCETAK) ================= -->
+  <main class="app-container no-print">
+
+    <!-- TAB 1: DASHBOARD HARIAN, PENOMORAN BULANAN, & MENU ORGANOLEPTIK -->
+    <section id="tab-dashboard" class="tab-pane active">
+      <!-- Ringkasan Cepat Total Ompreng -->
+      <div class="summary-grid">
+        <div class="summary-card card-timur">
+          <div class="card-label">WILAYAH TIMUR (Driver: <span id="lblDriverTimur">Tolil</span>)</div>
+          <div class="card-value" id="valTotalTimur">1.351 <span>Ompreng</span></div>
+          <div class="card-sub" id="subDetailTimur">Sekolah: 1.115 (174 PK + 941 PB) | Posyandu: 236</div>
+        </div>
+        <div class="summary-card card-barat">
+          <div class="card-label">WILAYAH BARAT (Driver: <span id="lblDriverBarat">Eko Sutikno</span>)</div>
+          <div class="card-value" id="valTotalBarat">1.033 <span>Ompreng</span></div>
+          <div class="card-sub" id="subDetailBarat">Sekolah: 849 (447 PK + 402 PB) | Posyandu: 184</div>
+        </div>
+        <div class="summary-card card-total">
+          <div class="card-label">TOTAL PRODUKSI & DISTRIBUSI HARIAN</div>
+          <div class="card-value" id="valGrandTotal">2.384 <span>Ompreng</span></div>
+          <div class="card-sub">Sinkron 100% antara Rekap Lapangan & Surat Dapodik</div>
+        </div>
+      </div>
+
+      <div class="two-col-grid">
+        <!-- Panel Tanggal & Penomoran Otomatis Reset Bulanan -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2>📅 Tanggal Operasional & Penomoran Bulanan</h2>
+            <span class="badge badge-info" id="badgePeriodeBulan">Periode: 2026-10 (Romawi: X)</span>
+          </div>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="inpTanggal">Tanggal Distribusi</label>
+              <input type="date" id="inpTanggal" onchange="onDateChange()" />
+              <small id="lblTanggalIndo" class="helper-text">Jumat, 16 Oktober 2026</small>
+            </div>
+            <div class="form-group">
+              <label for="inpPeriodeRekap">Label Periode (Rekap Distribusi)</label>
+              <input type="text" id="inpPeriodeRekap" placeholder="PERIODE 26 (12 Oktober – 25 Oktober 2026)" oninput="updateConfigFromUI()" />
+            </div>
+            <div class="form-group">
+              <label for="inpNoAwal">Nomor Urut Awal Hari Ini (Reset Tiap Bulan)</label>
+              <div class="input-with-btn">
+                <input type="number" id="inpNoAwal" min="1" value="134" oninput="recalculateNumberingPreview()" />
+                <button type="button" class="btn btn-sm btn-outline" onclick="resetTo0001()">Reset 0001</button>
+              </div>
+              <small id="lblRangeNomor" class="helper-text">
+                Rentang Hari Ini: <strong>0134</strong> s/d <strong>0148</strong> (15 Lembaga Aktif)
+              </small>
+            </div>
+            <div class="form-group">
+              <label>Contoh Format Nomor Tercetak</label>
+              <div class="code-preview" id="lblContohNomor">
+                SJ: 0134/SJ/SPPGBRN/X/2026<br/>
+                BAST: 0134/BAST/SPPGBRN/X/2026
+              </div>
+            </div>
+          </div>
+          <div class="panel-footer">
+            <button type="button" class="btn btn-success" onclick="lockAndSaveMonthlyNumbering()">
+              🔒 Kunci Nomor Tanggal Ini ke GAS
+            </button>
+          </div>
+
+          <!-- Riwayat Penomoran Bulan Aktif -->
+          <div class="sub-section">
+            <h3>Riwayat Penomoran Bulan Ini (<span id="lblHistoryMonth">2026-10</span>)</h3>
+            <div class="table-responsive">
+              <table class="data-table compact-table">
+                <thead>
+                  <tr>
+                    <th>Tanggal</th>
+                    <th>No. Awal</th>
+                    <th>No. Akhir</th>
+                    <th>Jml Surat</th>
+                    <th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="tbodyLogPenomoran"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- Panel Menu Harian Dinamis (Checklist Organoleptik) -->
+        <div class="panel-card">
+          <div class="panel-header">
+            <h2>🍱 Menu Harian MBG (Checklist Organoleptik)</h2>
+            <button type="button" class="btn btn-sm btn-outline" onclick="addMenuRow()">+ Tambah Baris</button>
+          </div>
+          <p class="panel-desc">
+            Ubah nama makanan di bawah ini sesuai menu harian SPPG Buaran. Perubahan otomatis diterapkan ke seluruh lembar <strong>Checklist Uji Organoleptik</strong> (16 Lembaga + 1 Internal SPPG Buaran).
+          </p>
+          <div class="table-responsive">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th style="width:50px;">No</th>
+                  <th style="width:150px;">Kategori</th>
+                  <th>Nama Makanan Harian</th>
+                  <th style="width:70px;">Aktif</th>
+                </tr>
+              </thead>
+              <tbody id="tbodyMenuHarian"></tbody>
+            </table>
+          </div>
+          <div class="panel-footer" style="margin-top:14px;">
+            <button type="button" class="btn btn-primary" onclick="saveMenuAndConfigToGAS()">
+              💾 Simpan Menu & Konfigurasi ke GAS
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Panel Pejabat & Armada Distribusi -->
+      <div class="panel-card" style="margin-top: 20px;">
+        <div class="panel-header">
+          <h2>👤 Data Pejabat Penandatangan & Armada Tim Distribusi</h2>
+        </div>
+        <div class="four-col-grid">
+          <div class="form-group">
+            <label>Kepala SPPG Buaran</label>
+            <input type="text" id="cfgKepalaSppg" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Pengawas Distribusi / Aslap</label>
+            <input type="text" id="cfgPengawasDist" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Pengawas Gizi</label>
+            <input type="text" id="cfgPengawasGizi" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Koord. Cuci Ompreng</label>
+            <input type="text" id="cfgKoordCuci" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Driver Wilayah Barat</label>
+            <input type="text" id="cfgDriverBaratNama" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>No. Telp Driver Barat</label>
+            <input type="text" id="cfgDriverBaratTelp" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Kendaraan Wilayah Barat</label>
+            <input type="text" id="cfgDriverBaratMobil" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Nopol Wilayah Barat</label>
+            <input type="text" id="cfgDriverBaratNopol" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Driver Wilayah Timur</label>
+            <input type="text" id="cfgDriverTimurNama" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>No. Telp Driver Timur</label>
+            <input type="text" id="cfgDriverTimurTelp" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Kendaraan Wilayah Timur</label>
+            <input type="text" id="cfgDriverTimurMobil" oninput="updateConfigFromUI()" />
+          </div>
+          <div class="form-group">
+            <label>Nopol Wilayah Timur</label>
+            <input type="text" id="cfgDriverTimurNopol" oninput="updateConfigFromUI()" />
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 2: KUOTA MASTER KPM (LAPANGAN VS DAPODIK) & POSYANDU PER POS -->
+    <section id="tab-kpm" class="tab-pane">
+      <div class="panel-card">
+        <div class="panel-header">
+          <div>
+            <h2>🏫 Tabel Master KPM: Kuota Lapangan (Dropping) vs Dapodik (Web BGN)</h2>
+            <p class="panel-desc">
+              • <strong>Kuota Lapangan</strong> digunakan pada <em>Tabel Rekap Porsi Tim Distribusi</em> sesuai titik dropping fisik.<br/>
+              • <strong>Kuota Dapodik</strong> digunakan pada <em>Surat Jalan & BAST</em> sesuai data Web BGN.<br/>
+              • Status <code>DIBEKUKAN</code> (SDN Buaran 01) tetap tampil di daftar KPM tetapi otomatis dikecualikan dari penjumlahan aktif & pencetakan surat.
+            </p>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="saveKpmMasterToGAS()">
+            💾 Simpan Perubahan KPM ke GAS
+          </button>
+        </div>
+
+        <div class="table-responsive">
+          <table class="data-table" id="tblKpmMaster">
+            <thead>
+              <tr>
+                <th rowspan="2">Wilayah</th>
+                <th rowspan="2">Urut Surat</th>
+                <th rowspan="2">Nama Lembaga (Rekap / Surat)</th>
+                <th rowspan="2">Status KPM</th>
+                <th colspan="3" class="th-lapangan">Kuota Lapangan (Dropping)</th>
+                <th colspan="3" class="th-dapodik">Kuota Dapodik (Surat & BAST)</th>
+                <th rowspan="2">Kepala Lembaga & PIC</th>
+              </tr>
+              <tr>
+                <th class="th-lapangan">PK</th>
+                <th class="th-lapangan">PB Utama</th>
+                <th class="th-lapangan">PB Guru/Busui</th>
+                <th class="th-dapodik">PK</th>
+                <th class="th-dapodik">PB Utama</th>
+                <th class="th-dapodik">PB Guru/Busui</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyKpmMaster"></tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- Rincian Posyandu Per Pos -->
+      <div class="panel-card" style="margin-top:20px;">
+        <div class="panel-header">
+          <div>
+            <h2>👶 Rincian Posyandu Per Pos (Pos 1–6 Rengasbandung & Pos 1–5 Buaran)</h2>
+            <p class="panel-desc">
+              Rincian per pos di bawah ini ditampilkan pada lembar <strong>Rekap Jumlah Porsi Distribusi</strong> dan otomatis diagregasi ke tingkat desa untuk Surat Jalan & BAST.
+            </p>
+          </div>
+        </div>
+        <div class="table-responsive">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Wilayah</th>
+                <th>No. Pos</th>
+                <th>Nama Posyandu</th>
+                <th>Balita (PK)</th>
+                <th>Bumil + Busui (PB)</th>
+                <th>Sampel Organoleptik (PB)</th>
+                <th>Total Ompreng Pos</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyPosyanduPos"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- TAB 3: PRATINJAU & CETAK 4 DOKUMEN -->
+    <section id="tab-print" class="tab-pane">
+      <div class="print-toolbar panel-card">
+        <div class="doc-selector">
+          <button type="button" class="doc-btn active" data-doc="rekap" onclick="selectDocType('rekap')">
+            📊 1. Rekap Porsi Distribusi
+          </button>
+          <button type="button" class="doc-btn" data-doc="sj" onclick="selectDocType('sj')">
+            🚚 2. Surat Jalan (2 Rangkap/Hlm)
+          </button>
+          <button type="button" class="doc-btn" data-doc="bast" onclick="selectDocType('bast')">
+            📄 3. BAST Penerimaan & Pengembalian
+          </button>
+          <button type="button" class="doc-btn" data-doc="organoleptik" onclick="selectDocType('organoleptik')">
+            🧪 4. Checklist Uji Organoleptik
+          </button>
+        </div>
+
+        <div class="print-filters">
+          <div class="form-group-inline">
+            <label for="selFilterWilayah">Filter Wilayah:</label>
+            <select id="selFilterWilayah" onchange="renderActivePrintPreview()">
+              <option value="ALL">Semua Wilayah (Barat & Timur)</option>
+              <option value="BARAT">Hanya Wilayah Barat (Eko Sutikno)</option>
+              <option value="TIMUR">Hanya Wilayah Timur (Tolil)</option>
+            </select>
+          </div>
+          <div class="form-group-inline" id="wrapModeRekap">
+            <label for="selModeRekap">Tampilan Angka Rekap:</label>
+            <select id="selModeRekap" onchange="renderActivePrintPreview()">
+              <option value="LAPANGAN">Data Lapangan / Dropping (Sesuai Gedung Fisik)</option>
+              <option value="DAPODIK">Data Dapodik / Web BGN (Sesuai Surat Jalan)</option>
+            </select>
+          </div>
+          <button type="button" class="btn btn-primary btn-lg" onclick="window.print()">
+            🖨️ Cetak / Simpan PDF Sekarang
+          </button>
+        </div>
+      </div>
+
+      <div class="preview-notice">
+        💡 <strong>Tips Cetak Presisi:</strong> Saat jendela cetak terbuka, pastikan <em>Margins</em> diatur ke <strong>Default / Minimum</strong> dan centang opsi <strong>Background graphics</strong> jika ingin garis tabel tampil sempurna.
+      </div>
+    </section>
+  </main>
+
+  <!-- ================= MODAL KONEKSI API GAS & LOGO BGN ================= -->
+  <div id="apiModal" class="modal-backdrop no-print" style="display:none;">
+    <div class="modal-box">
+      <div class="modal-header">
+        <h3>⚙️ Pengaturan Web App URL (GAS Mandiri) & Logo BGN</h3>
+        <button type="button" class="btn-close" onclick="closeApiModal()">✕</button>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="inpGasUrl">URL Web App Google Apps Script (`https://script.google.com/macros/s/.../exec`)</label>
+          <input type="url" id="inpGasUrl" placeholder="Tempelkan URL hasil Deploy Web App GAS Mandiri di sini..." />
+          <small class="helper-text">
+            Jika dikosongkan, PWA tetap dapat berjalan penuh menggunakan memori lokal perangkat (LocalStorage).
+          </small>
+        </div>
+        <div class="form-group" style="margin-top:12px;">
+          <label for="inpLogoFile">Unggah Logo Badan Gizi Nasional (Opsional - Tersimpan Permanen di Browser)</label>
+          <input type="file" id="inpLogoFile" accept="image/*" onchange="handleLogoUpload(event)" />
+          <small class="helper-text">
+            Jika belum diunggah, dokumen cetak otomatis menggunakan SVG Emblem Badan Gizi Nasional bawaan.
+          </small>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-outline" onclick="initDatabaseViaGAS()">🛠️ Inisialisasi DB Baru di GAS</button>
+        <button type="button" class="btn btn-primary" onclick="saveApiSettings()">Simpan & Hubungkan</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ================= CONTAINER CETAK DOKUMEN (AKTIF SAAT PRATINJAU & PRINT) ================= -->
+  <div id="printAreaContainer" class="print-area-wrapper"></div>
+
+  <script src="./app.js"></script>
+</body>
+</html>
