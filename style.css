@@ -1,0 +1,860 @@
+/* ==========================================================================
+   1. RESET & VARIABEL TEMA DASHBOARD PWA SPPG BUARAN
+   ========================================================================== */
+:root {
+  --bg-body: #f1f5f9;
+  --bg-card: #ffffff;
+  --text-main: #0f172a;
+  --text-muted: #475569;
+  --primary: #1e3a8a;
+  --primary-hover: #1d4ed8;
+  --success: #059669;
+  --warning: #d97706;
+  --danger: #dc2626;
+  --border-color: #cbd5e1;
+  --radius: 10px;
+}
+
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  background-color: var(--bg-body);
+  color: var(--text-main);
+  line-height: 1.5;
+  padding-bottom: 50px;
+}
+
+/* ==========================================================================
+   2. HEADER, NAVIGASI TAB & KOMPONEN UI
+   ========================================================================== */
+.app-header {
+  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 100%);
+  color: #ffffff;
+  padding: 16px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+}
+
+.header-brand {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.brand-badge {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: #fbbf24;
+  color: #0f172a;
+  font-weight: 800;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid #ffffff;
+  flex-shrink: 0;
+}
+
+.header-brand h1 {
+  font-size: 18px;
+  letter-spacing: 0.4px;
+}
+
+.header-brand p {
+  font-size: 12.5px;
+  color: #cbd5e1;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.app-tabs {
+  background: #ffffff;
+  border-bottom: 1px solid var(--border-color);
+  padding: 0 24px;
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+}
+
+.tab-btn {
+  background: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
+  padding: 14px 18px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.2s;
+}
+
+.tab-btn:hover {
+  color: var(--primary);
+}
+
+.tab-btn.active {
+  color: var(--primary);
+  border-bottom-color: var(--primary);
+  background: #f8fafc;
+}
+
+.app-container {
+  max-width: 1360px;
+  margin: 20px auto;
+  padding: 0 18px;
+}
+
+.tab-pane {
+  display: none;
+}
+
+.tab-pane.active {
+  display: block;
+}
+
+/* ==========================================================================
+   3. KARTU RINGKASAN, GRID, FORM, & TOMBOL
+   ========================================================================== */
+.summary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(290px, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.summary-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  border-left: 5px solid var(--primary);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
+}
+
+.summary-card.card-timur { border-left-color: #2563eb; }
+.summary-card.card-barat { border-left-color: #d97706; }
+.summary-card.card-total { border-left-color: #059669; background: #f0fdf4; }
+
+.card-label {
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-muted);
+}
+
+.card-value {
+  font-size: 28px;
+  font-weight: 800;
+  margin: 6px 0 4px;
+  color: var(--text-main);
+}
+
+.card-value span {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-muted);
+}
+
+.card-sub {
+  font-size: 12.5px;
+  color: var(--text-muted);
+}
+
+.two-col-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(460px, 1fr));
+  gap: 20px;
+}
+
+.four-col-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 14px;
+}
+
+.panel-card {
+  background: var(--bg-card);
+  border-radius: var(--radius);
+  padding: 20px;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+  margin-bottom: 14px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e2e8f0;
+  flex-wrap: wrap;
+}
+
+.panel-header h2 {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.panel-desc {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.form-group label {
+  display: block;
+  font-size: 12.5px;
+  font-weight: 600;
+  margin-bottom: 5px;
+  color: #334155;
+}
+
+.form-group input[type="text"],
+.form-group input[type="date"],
+.form-group input[type="number"],
+.form-group input[type="url"],
+.form-group select {
+  width: 100%;
+  padding: 8px 11px;
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  font-size: 13.5px;
+}
+
+.input-with-btn {
+  display: flex;
+  gap: 6px;
+}
+
+.helper-text {
+  display: block;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  margin-top: 4px;
+}
+
+.code-preview {
+  background: #0f172a;
+  color: #38bdf8;
+  font-family: monospace;
+  font-size: 12px;
+  padding: 8px 10px;
+  border-radius: 6px;
+  line-height: 1.4;
+}
+
+.panel-footer {
+  margin-top: 14px;
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.sub-section {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dashed var(--border-color);
+}
+
+.sub-section h3 {
+  font-size: 13.5px;
+  margin-bottom: 8px;
+  color: #334155;
+}
+
+/* Badges & Buttons */
+.badge {
+  display: inline-block;
+  padding: 4px 10px;
+  font-size: 11.5px;
+  font-weight: 700;
+  border-radius: 999px;
+}
+.badge-offline { background: #fef3c7; color: #92400e; }
+.badge-online { background: #d1fae5; color: #065f46; }
+.badge-info { background: #dbeafe; color: #1e40af; }
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 6px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  text-decoration: none;
+  transition: all 0.15s;
+}
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-lg { padding: 10px 18px; font-size: 14px; }
+.btn-primary { background: var(--primary); color: #ffffff; }
+.btn-primary:hover { background: var(--primary-hover); }
+.btn-success { background: var(--success); color: #ffffff; }
+.btn-outline {
+  background: #ffffff;
+  color: var(--text-main);
+  border-color: var(--border-color);
+}
+.btn-outline:hover { background: #f8fafc; }
+
+/* ==========================================================================
+   4. TABEL DATA EDITOR (MENU, KPM, POSYANDU)
+   ========================================================================== */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.data-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.data-table th,
+.data-table td {
+  border: 1px solid #cbd5e1;
+  padding: 7px 9px;
+  text-align: left;
+}
+
+.data-table thead th {
+  background: #f1f5f9;
+  font-weight: 700;
+  color: #1e293b;
+  text-align: center;
+}
+
+.data-table th.th-lapangan { background: #fef3c7; color: #92400e; }
+.data-table th.th-dapodik { background: #dbeafe; color: #1e40af; }
+
+.data-table input[type="text"],
+.data-table input[type="number"],
+.data-table select {
+  width: 100%;
+  padding: 5px 7px;
+  border: 1px solid #cbd5e1;
+  border-radius: 4px;
+  font-size: 12.5px;
+}
+
+.data-table input[type="number"] {
+  text-align: center;
+  font-weight: 600;
+  min-width: 58px;
+}
+
+.row-dibekukan { background-color: #fee2e2 !important; color: #7f1d1d; }
+.row-merger { background-color: #fef9c3 !important; }
+
+/* ==========================================================================
+   5. TOOLBAR PRATINJAU CETAK & MODAL
+   ========================================================================== */
+.print-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+
+.doc-selector {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.doc-btn {
+  padding: 9px 14px;
+  border: 1px solid var(--border-color);
+  background: #f8fafc;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.doc-btn.active {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+}
+
+.print-filters {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.form-group-inline {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.form-group-inline select {
+  padding: 7px 10px;
+  border-radius: 6px;
+  border: 1px solid var(--border-color);
+}
+
+.preview-notice {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1e3a8a;
+  padding: 10px 14px;
+  border-radius: 6px;
+  font-size: 12.5px;
+  margin-bottom: 16px;
+}
+
+/* Modal */
+.modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 999;
+  padding: 16px;
+}
+
+.modal-box {
+  background: #ffffff;
+  width: 100%;
+  max-width: 560px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.25);
+}
+
+.modal-header, .modal-footer {
+  padding: 14px 18px;
+  background: #f8fafc;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.modal-footer {
+  border-bottom: none;
+  border-top: 1px solid #e2e8f0;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.modal-body { padding: 18px; }
+.btn-close { background: none; border: none; font-size: 18px; cursor: pointer; }
+
+/* ==========================================================================
+   6. GAYA KERTAS PRATINJAU & CETAK PRESISI (REKAP, SJ, BAST, ORGANOLEPTIK)
+   ========================================================================== */
+.print-area-wrapper {
+  max-width: 1120px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+
+.print-sheet {
+  background: #ffffff;
+  color: #000000;
+  font-family: 'Times New Roman', Times, serif;
+  margin: 0 auto 24px auto;
+  padding: 12mm 14mm;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+  page-break-after: always;
+  break-after: page;
+  position: relative;
+}
+
+.print-sheet:last-child {
+  page-break-after: auto;
+  break-after: auto;
+}
+
+/* A. GAYA KHUSUS REKAP DISTRIBUSI */
+.sheet-rekap {
+  font-family: Arial, Helvetica, sans-serif;
+  max-width: 210mm;
+}
+
+.rekap-title {
+  text-align: center;
+  font-weight: 800;
+  font-size: 15px;
+  margin-bottom: 2px;
+}
+
+.rekap-subtitle {
+  text-align: center;
+  font-weight: 700;
+  font-size: 13px;
+  margin-bottom: 10px;
+}
+
+.tbl-rekap {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  margin-bottom: 14px;
+}
+
+.tbl-rekap th, .tbl-rekap td {
+  border: 1px solid #000000;
+  padding: 4px 6px;
+}
+
+.tbl-rekap th {
+  background: #e2e8f0;
+  text-align: center;
+  font-weight: 700;
+}
+
+.tbl-rekap td.num { text-align: center; }
+.tbl-rekap tr.total-row td {
+  font-weight: 700;
+  background: #f8fafc;
+}
+
+.rekap-grand-box {
+  border: 2px solid #000000;
+  padding: 8px 14px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 14px;
+  margin-top: 8px;
+}
+
+/* B. GAYA KHUSUS SURAT JALAN (2 RANGKAP KIRI-KANAN / LANDSCAPE) */
+.sheet-sj-landscape {
+  max-width: 297mm;
+  padding: 8mm 10mm;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.sj-two-up-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10mm;
+  align-items: start;
+}
+
+.sj-copy {
+  border: 1px solid #000000;
+  padding: 8px 10px;
+  font-size: 10.5px;
+}
+
+.sj-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid #000000;
+  padding-bottom: 6px;
+  margin-bottom: 6px;
+}
+
+.sj-logo {
+  width: 48px;
+  height: 48px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.sj-header-text h2 {
+  font-size: 14px;
+  font-weight: 800;
+  margin: 0;
+  letter-spacing: 0.5px;
+}
+
+.sj-header-text h3 {
+  font-size: 11.5px;
+  font-weight: 700;
+  margin: 1px 0;
+}
+
+.sj-header-text p {
+  font-size: 9.5px;
+  line-height: 1.25;
+}
+
+.sj-meta {
+  margin-bottom: 6px;
+  font-size: 10px;
+}
+
+.sj-info-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 8px;
+  border: 1px solid #000000;
+  padding: 5px 7px;
+  font-size: 9.8px;
+}
+
+.sj-info-box h4 {
+  font-size: 10px;
+  text-decoration: underline;
+  margin-bottom: 3px;
+}
+
+.sj-info-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.sj-info-table td {
+  padding: 1px 2px;
+  vertical-align: top;
+}
+
+.tbl-sj {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 10px;
+  margin-bottom: 6px;
+}
+
+.tbl-sj th, .tbl-sj td {
+  border: 1px solid #000000;
+  padding: 3px 5px;
+}
+
+.tbl-sj th {
+  text-align: center;
+  background: #f1f5f9;
+}
+
+.sj-notes {
+  font-size: 9.5px;
+  margin-bottom: 8px;
+}
+
+.sj-sign-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  text-align: center;
+  font-size: 9.5px;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.sj-sign-space {
+  height: 38px;
+}
+
+.sj-slogan {
+  text-align: center;
+  font-weight: 800;
+  font-size: 9.5px;
+  margin-top: 8px;
+  padding-top: 4px;
+  border-top: 1px solid #000000;
+  letter-spacing: 0.4px;
+}
+
+/* C. GAYA KHUSUS BAST (2-IN-1 ATAS & BAWAH DALAM 1 HALAMAN) */
+.sheet-bast {
+  max-width: 210mm;
+  padding: 9mm 14mm;
+  font-family: 'Times New Roman', Times, serif;
+}
+
+.bast-half {
+  padding-bottom: 8px;
+}
+
+.bast-divider {
+  border-top: 1.5px dashed #000000;
+  margin: 10px 0;
+}
+
+.bast-top-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  margin-bottom: 6px;
+}
+
+.bast-logo {
+  width: 54px;
+  height: 54px;
+  margin-bottom: 4px;
+}
+
+.bast-top-header h2 {
+  font-size: 13.5px;
+  font-weight: 700;
+  text-transform: uppercase;
+  line-height: 1.25;
+}
+
+.bast-no {
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 2px;
+}
+
+.bast-body-text {
+  font-size: 11.5px;
+  text-align: justify;
+  margin: 6px 0 8px;
+  line-height: 1.4;
+}
+
+.bast-parties-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  font-size: 11px;
+  margin-bottom: 6px;
+}
+
+.bast-party-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.bast-party-table td {
+  padding: 1px 2px;
+  vertical-align: top;
+}
+
+.bast-sign-line {
+  margin-top: 28px;
+  text-align: center;
+}
+
+.bast-knowing-title {
+  text-align: center;
+  font-size: 11px;
+  margin: 2px 0 4px;
+}
+
+.bast-knowing-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+  font-size: 11px;
+}
+
+.bast-knowing-space {
+  height: 32px;
+}
+
+/* D. GAYA KHUSUS CHECKLIST UJI ORGANOLEPTIK */
+.sheet-organo {
+  max-width: 210mm;
+  padding: 12mm 15mm;
+  font-family: 'Times New Roman', Times, serif;
+  font-size: 12px;
+}
+
+.organo-meta-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
+  font-size: 12px;
+}
+
+.organo-meta-table td {
+  padding: 2px 4px;
+}
+
+.tbl-organo {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 11.5px;
+  margin-bottom: 10px;
+}
+
+.tbl-organo th, .tbl-organo td {
+  border: 1px solid #000000;
+  padding: 5px 6px;
+}
+
+.tbl-organo th {
+  text-align: center;
+  font-weight: 700;
+}
+
+.organo-notes {
+  font-size: 11px;
+  margin-bottom: 10px;
+  line-height: 1.4;
+}
+
+.organo-score-box {
+  font-size: 11px;
+  margin-bottom: 14px;
+}
+
+.organo-sign-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  text-align: center;
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+/* ==========================================================================
+   7. ATURAN MEDIA PRINT (CETAK LANGSUNG KE KERTAS / PDF)
+   ========================================================================== */
+@media print {
+  body {
+    background: #ffffff !important;
+    padding: 0 !important;
+    margin: 0 !important;
+  }
+
+  .no-print {
+    display: none !important;
+  }
+
+  .print-area-wrapper {
+    max-width: 100% !important;
+    width: 100% !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-sheet {
+    box-shadow: none !important;
+    margin: 0 !important;
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
